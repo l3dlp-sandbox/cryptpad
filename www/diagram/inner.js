@@ -178,7 +178,6 @@ define([
             drafts: 0,
             p: 'cryptpad',
             integrated: framework.isIntegrated() ? 'true' : 'false',
-
             chrome: framework.isReadOnly() ? 0 : 1,
             dark: window.CryptPad_theme === "dark" ? 1 : 0,
 
@@ -188,6 +187,7 @@ define([
             noExitBtn: 1,
             browser: 0,
             ui: checkDefaultTheme(),
+            pv: 0,
 
             noDevice: 1,
             filesupport: 0,
