@@ -944,7 +944,6 @@ define([
                             return void UI.warn(Messages.autostore_error);
                         }
                         $(document).trigger('cpPadStored');
-                        common.getSframeChannel().query('Q_INCREMENT_CROWDFUNDING_ACTION', null, function () {});
                         UI.log(Messages.autostore_saved);
                     });
                 });
@@ -3389,7 +3388,11 @@ define([
     UIElements.displayCrowdfunding = function (common, force) {
         if (crowdfundingState) { return; }
         var priv = common.getMetadataMgr().getPrivateData();
-        if (priv.app === 'form' && !priv.canEdit && !priv.form_auditorKey) { return; }
+        var inDrive = /^\/drive/;
+        var isDriveContext = inDrive.test(priv.pathname || '');
+        if (isDriveContext) { return; }
+        if (!priv.channel) { return; }
+        if (priv.app === 'form' && priv.readOnly && !priv.form_auditorHash && !priv.form_auditorKey) { return; }
 
         var todo = function (actionCount) {
             crowdfundingState = true;
@@ -3416,7 +3419,7 @@ define([
                 buttons.push({
                     name: Messages.features_f_subscribe,
                     className: 'primary',
-                    iconClass: 'subscribe',
+                    iconClass: 'crowdfunding-donate2',
                     onClick: function () {
                         common.openURL('/accounts/');
                         Feedback.send('CROWDFUNDING_SUBSCRIBE');
@@ -3487,7 +3490,7 @@ define([
 
         // This pad will be deleted automatically, it shouldn't be stored
         if (priv.burnAfterReading) { return; }
-        if (priv.app === 'form' && !priv.canEdit && !priv.form_auditorKey && !common.isLoggedIn()) { return; }
+        if (priv.app === 'form' && priv.readOnly && !priv.form_auditorHash && !priv.form_auditorKey && !common.isLoggedIn()) { return; }
         var typeMsg = priv.pathname.indexOf('/file/') !== -1 ? Messages.autostore_file :
                         priv.pathname.indexOf('/drive/') !== -1 ? Messages.autostore_sf :
                           Messages.autostore_pad;
@@ -3537,7 +3540,6 @@ define([
                     return void UI.warn(Messages.autostore_error);
                 }
                 $(document).trigger('cpPadStored');
-                common.getSframeChannel().query('Q_INCREMENT_CROWDFUNDING_ACTION', null, function () {});
                 delete autoStoreModal[priv.channel];
                 modal.delete();
                 UI.log(Messages.autostore_saved);

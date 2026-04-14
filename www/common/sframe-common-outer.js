@@ -1018,65 +1018,135 @@ define([
                     });
                 });
                 var CROWDFUNDING_PREFIX = 'cp_crowdfunding_';
-                var CROWDFUNDING_LEGACY = { visitCount: 'cp_crowdfundingVisitCount', firstSeen: 'cp_crowdfundingFirstSeen', lastShownAtCount: 'cp_crowdfundingLastShownAtCount', lastShownAtTime: 'cp_crowdfundingLastShownAtTime' };
-                var crowdfundingKey = function (suffix) {
-                    return CROWDFUNDING_PREFIX + suffix;
-                };
-                var crowdfundingGet = function (suffix) {
-                    var k = crowdfundingKey(suffix);
-                    var val = localStorage.getItem(k);
-                    if (val !== null && val !== '') return val;
-                    var legacy = CROWDFUNDING_LEGACY[suffix];
-                    if (legacy) {
-                        val = localStorage.getItem(legacy);
-                        if (val !== null && val !== '') {
-                            try { localStorage.setItem(k, val); localStorage.removeItem(legacy); } catch (e) {}
-                            return val;
-                        }
-                    }
-                    return null;
-                };
-                var CROWDFUNDING_MIN_ACTIONS = 5;
-                var CROWDFUNDING_ACTIONS_INTERVAL = 10;
+                var CROWDFUNDING_DRIVE_KEY = ['general', 'crowdfunding_metrics'];
+                var CROWDFUNDING_MIN_ACTIONS = 10;
+                var CROWDFUNDING_ACTIONS_INTERVAL = 15;
                 var CROWDFUNDING_MIN_QUOTA_MB = 10;
                 var CROWDFUNDING_ONE_DAY_MS = 24 * 60 * 60 * 1000;
+                var CROWDFUNDING_OPEN_DEDUPE_MS = 15000;
+                var crowdfundingLastOpenScope = null;
+                var crowdfundingLastOpenAt = 0;
+                var crowdfundingGetLS = function () {
+                    var get = function (suffix) {
+                        var k = CROWDFUNDING_PREFIX + suffix;
+                        var val = localStorage.getItem(k);
+                        if (val !== null && val !== '') { return Number(val) || null; }
+                        return null;
+                    };
+                    return {
+                        visitCount: get('visitCount') || 0,
+                        firstSeen: get('firstSeen') || null,
+                        lastShownAtCount: get('lastShownAtCount') || 0,
+                        lastShownAtTime: get('lastShownAtTime') || 0
+                    };
+                };
+                // Read metrics: encrypted drive for logged-in users, localStorage for guests
+                var crowdfundingReadMetrics = function (cb) {
+                    if (!Utils.LocalStore.isLoggedIn()) { return cb(crowdfundingGetLS()); }
+                    Cryptpad.getAttribute(CROWDFUNDING_DRIVE_KEY, function (e, metrics) {
+                        if (e || !metrics || typeof metrics !== 'object') {
+                            return cb(crowdfundingGetLS());
+                        }
+                        cb(metrics);
+                    });
+                };
+                // Write metrics: encrypted drive for logged-in users, localStorage for guests
+                var crowdfundingWriteMetrics = function (metrics, cb) {
+                    if (!Utils.LocalStore.isLoggedIn()) {
+                        try {
+                            ['visitCount', 'firstSeen', 'lastShownAtCount', 'lastShownAtTime'].forEach(function (k) {
+                                if (metrics[k] !== null && metrics[k] !== undefined) {
+                                    localStorage.setItem(CROWDFUNDING_PREFIX + k, String(metrics[k]));
+                                }
+                            });
+                        } catch (e) {}
+                        return cb && cb();
+                    }
+                    Cryptpad.setAttribute(CROWDFUNDING_DRIVE_KEY, metrics, function (e) {
+                        if (!e) {
+                            return cb && cb();
+                        }
+                        try {
+                            ['visitCount', 'firstSeen', 'lastShownAtCount', 'lastShownAtTime'].forEach(function (k) {
+                                if (metrics[k] !== null && metrics[k] !== undefined) {
+                                    localStorage.setItem(CROWDFUNDING_PREFIX + k, String(metrics[k]));
+                                }
+                            });
+                        } catch (e) {}
+                        cb && cb();
+                    });
+                };
+                var crowdfundingIncrementAction = function (cb) {
+                    crowdfundingReadMetrics(function (metrics) {
+                        metrics.visitCount = (metrics.visitCount || 0) + 1;
+                        if (!metrics.firstSeen) { metrics.firstSeen = Date.now(); }
+                        crowdfundingWriteMetrics(metrics, cb);
+                    });
+                };
 
                 sframeChan.on('Q_CROWDFUNDING_SHOULD_SHOW', function (data, cb) {
-                    var check = function () {
-                        var actionCount = Number(crowdfundingGet('visitCount')) || 0;
-                        var lastShownAtCount = Number(crowdfundingGet('lastShownAtCount')) || 0;
-                        var lastShownAtTime = Number(crowdfundingGet('lastShownAtTime')) || 0;
+                    crowdfundingReadMetrics(function (metrics) {
+                        var actionCount = metrics.visitCount || 0;
+                        var lastShownAtCount = metrics.lastShownAtCount || 0;
+                        var lastShownAtTime = metrics.lastShownAtTime || 0;
                         var now = Date.now();
                         var nextThreshold = lastShownAtCount === 0 ? CROWDFUNDING_MIN_ACTIONS : lastShownAtCount + CROWDFUNDING_ACTIONS_INTERVAL;
                         var enoughTimePassed = lastShownAtTime === 0 || (now - lastShownAtTime >= CROWDFUNDING_ONE_DAY_MS);
-                        cb({
-                            show: actionCount >= nextThreshold && enoughTimePassed,
-                            actionCount: actionCount
-                        });
-                    };
-                    if (CROWDFUNDING_MIN_QUOTA_MB <= 0) { return check(); }
-                    Cryptpad.getPinnedUsage({}, function (e, used) {
-                        if (e || typeof used !== 'number' || (used / (1024 * 1024)) < CROWDFUNDING_MIN_QUOTA_MB) {
-                            return cb({ show: false });
+                        var showFromActions = actionCount >= nextThreshold && enoughTimePassed;
+                        if (showFromActions) {
+                            return cb({
+                                show: true,
+                                actionCount: actionCount
+                            });
                         }
-                        check();
+                        if (CROWDFUNDING_MIN_QUOTA_MB <= 0) {
+                            return cb({
+                                show: false,
+                                actionCount: actionCount
+                            });
+                        }
+                        Cryptpad.getPinnedUsage({}, function (e, used) {
+                            var usedMb = (typeof used === 'number') ? (used / (1024 * 1024)) : 0;
+                            cb({
+                                show: !e && usedMb >= CROWDFUNDING_MIN_QUOTA_MB && enoughTimePassed,
+                                actionCount: actionCount
+                            });
+                        });
                     });
                 });
                 sframeChan.on('Q_RECORD_CROWDFUNDING_SHOWN', function (data, cb) {
-                    try {
-                        if (data && typeof data.count === 'number') localStorage.setItem(crowdfundingKey('lastShownAtCount'), String(data.count));
-                        localStorage.setItem(crowdfundingKey('lastShownAtTime'), String(Date.now()));
-                    } catch (e) { console.warn('crowdfunding write failed', e); }
-                    cb();
+                    crowdfundingReadMetrics(function (metrics) {
+                        if (data && typeof data.count === 'number') { metrics.lastShownAtCount = data.count; }
+                        metrics.lastShownAtTime = Date.now();
+                        crowdfundingWriteMetrics(metrics, cb);
+                    });
                 });
-                sframeChan.on('Q_INCREMENT_CROWDFUNDING_ACTION', function (data, cb) {
+                sframeChan.on('Q_CROWDFUNDING_INCREMENT_OPEN', function (data, cb) {
+                    if (readOnly) { return cb && cb(); }
+                    var requestedScope = data && data.scope;
+                    var scope = (secret && secret.channel) || requestedScope;
+                    if (!scope) { return cb && cb(); }
+                    var now = Date.now();
+                    if (crowdfundingLastOpenScope === scope &&
+                        (now - crowdfundingLastOpenAt) < CROWDFUNDING_OPEN_DEDUPE_MS) {
+                        return cb && cb();
+                    }
                     try {
-                        var k = crowdfundingKey('visitCount');
-                        var count = (Number(localStorage.getItem(k)) || 0) + 1;
-                        localStorage.setItem(k, String(count));
-                        if (count === 1) localStorage.setItem(crowdfundingKey('firstSeen'), String(Date.now()));
-                    } catch (e) { console.warn('crowdfunding write failed', e); }
-                    cb();
+                        var dedupeRaw = localStorage.getItem(CROWDFUNDING_PREFIX + 'open_dedupe');
+                        var dedupe = dedupeRaw ? JSON.parse(dedupeRaw) : null;
+                        if (dedupe && dedupe.scope === scope &&
+                            typeof dedupe.ts === 'number' &&
+                            (now - dedupe.ts) < CROWDFUNDING_OPEN_DEDUPE_MS) {
+                            return cb && cb();
+                        }
+                        localStorage.setItem(CROWDFUNDING_PREFIX + 'open_dedupe', JSON.stringify({
+                            scope: scope,
+                            ts: now
+                        }));
+                    } catch (e) {}
+                    crowdfundingLastOpenScope = scope;
+                    crowdfundingLastOpenAt = now;
+                    crowdfundingIncrementAction(cb);
                 });
 
                 Cryptpad.mailbox.onEvent.reg(function (data, cb) {
@@ -2381,12 +2451,6 @@ define([
 
             sframeChan.on('Q_CREATE_PAD', function (data, cb) {
                 if (!isNewFile || rtStarted) { return; }
-                try {
-                    var k = 'cp_crowdfunding_visitCount';
-                    var count = (Number(localStorage.getItem(k)) || 0) + 1;
-                    localStorage.setItem(k, String(count));
-                    if (count === 1) localStorage.setItem('cp_crowdfunding_firstSeen', String(Date.now()));
-                } catch (e) { console.warn('crowdfunding write failed', e); }
                 let feedbackKey = 'APP_' + parsed.type.toUpperCase() + '_CREATE';
                 Utils.Feedback.send(feedbackKey);
                 // Create a new hash

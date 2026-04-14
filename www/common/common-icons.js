@@ -251,8 +251,9 @@ define([
         // Other
         "maintenance": "construction",
         "release-notes": "notepad-text",
-        "donate": "hand-heart",
-        "snooze": "timer",
+        "crowdfunding-donate": "hand-heart",
+        "crowdfunding-snooze": "timer",
+        "crowdfunding-donate2": "ticket"
     };
 
     Icons.add = (newIcons) => {

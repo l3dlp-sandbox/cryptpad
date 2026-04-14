@@ -768,7 +768,7 @@ define([
                 // Ctrl+E: New pad modal
                 var priv = ctx.metadataMgr.getPrivateData();
                 if (e.which === 69 && isApp) {
-                    if (priv.app === 'form' && !priv.canEdit && !priv.form_auditorKey) { return; }
+                    if (priv.app === 'form' && priv.readOnly && !priv.form_auditorHash && !priv.form_auditorKey) { return; }
                     e.preventDefault();
                     return void funcs.createNewPadModal();
                 }
@@ -1063,9 +1063,25 @@ define([
                 document.title = title;
             });
 
-            ctx.sframeChan.query('Q_INCREMENT_CROWDFUNDING_ACTION', null, function () {
+            var showCrowdfunding = function () {
                 UIElements.displayCrowdfunding(funcs);
-            });
+            };
+            var privateData = ctx.metadataMgr.getPrivateData();
+            var inDrive = /^\/drive/;
+            var isDriveContext = inDrive.test(privateData.pathname || '');
+            var isReadOnlyContext = Boolean(privateData.readOnly);
+            var isReadOnlyFormResponse = privateData.app === 'form' &&
+                !privateData.form_auditorKey &&
+                ((!privateData.canEdit) ||
+                 (isReadOnlyContext && !privateData.form_auditorHash));
+            var openScope = privateData.channel;
+            if (isDriveContext || isReadOnlyFormResponse || !openScope) {
+                showCrowdfunding();
+            } else {
+                ctx.sframeChan.query('Q_CROWDFUNDING_INCREMENT_OPEN', {
+                    scope: openScope
+                }, showCrowdfunding);
+            }
 
             ctx.sframeChan.ready();
 
