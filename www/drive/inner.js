@@ -59,7 +59,6 @@ define([
         }
         var r = drive.restrictedFolders = {};
         var oldIds = Object.keys(folders);
-        var lockedOut = false;
         nThen(function (waitFor) {
             Object.keys(drive.sharedFolders).forEach(function (fId) {
                 var sfData = drive.sharedFolders[fId] || {};
@@ -70,11 +69,12 @@ define([
                     sharedFolder: fId
                 }, waitFor(function (err, newObj) {
                     if (!APP.loggedIn && APP.newSharedFolder) {
-                        if (err === 'ERESTRICTED' || (newObj && newObj.restricted)) {
+                        if (newObj && newObj.restricted) {
                             lockoutAnonSharedFolder(common);
-                            lockedOut = true;
+                            waitFor.abort();
                             return;
                         }
+                        if (err) { return; }
                         if (!newObj || !Object.keys(newObj).length) {
                             // Empty anon drive: deleted
                             var msg = Messages.deletedError + '<br>' + Messages.errorRedirectToHome;
@@ -118,7 +118,7 @@ define([
                 }
             });
         }).nThen(function () {
-            if (!lockedOut) { cb(); }
+            cb();
         });
     };
     var updateSharedFolders = function (common) {
