@@ -1070,10 +1070,7 @@ define([
             var inDrive = /^\/drive/;
             var isDriveContext = inDrive.test(privateData.pathname || '');
             var isReadOnlyContext = Boolean(privateData.readOnly);
-            var isReadOnlyFormResponse = privateData.app === 'form' &&
-                !privateData.form_auditorKey &&
-                ((!privateData.canEdit) ||
-                 (isReadOnlyContext && !privateData.form_auditorHash));
+            var isReadOnlyFormResponse = privateData.app === 'form' && !privateData.form_auditorKey && ((!privateData.canEdit) || (isReadOnlyContext && !privateData.form_auditorHash));
             var openScope = privateData.channel;
             if (isDriveContext || isReadOnlyFormResponse || !openScope) {
                 showCrowdfunding();
