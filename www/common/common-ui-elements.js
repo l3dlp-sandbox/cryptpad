@@ -3388,9 +3388,7 @@ define([
     UIElements.displayCrowdfunding = function (common, force) {
         if (crowdfundingState) { return; }
         var priv = common.getMetadataMgr().getPrivateData();
-        var inDrive = /^\/drive/;
-        var isDriveContext = inDrive.test(priv.pathname || '');
-        if (isDriveContext) { return; }
+        if (priv.app === 'drive') { return; }
         if (!priv.channel) { return; }
         if (priv.app === 'form' && priv.readOnly && !priv.form_auditorHash && !priv.form_auditorKey) { return; }
 
