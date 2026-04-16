@@ -1045,7 +1045,12 @@ define([
                     if (!Utils.LocalStore.isLoggedIn()) { return cb(crowdfundingGetLS()); }
                     Cryptpad.getAttribute(CROWDFUNDING_DRIVE_KEY, function (e, metrics) {
                         if (e || !metrics || typeof metrics !== 'object') {
-                            return cb(crowdfundingGetLS());
+                            return cb({
+                                visitCount: 0,
+                                firstSeen: null,
+                                lastShownAtCount: 0,
+                                lastShownAtTime: 0
+                            });
                         }
                         cb(metrics);
                     });
@@ -1062,17 +1067,7 @@ define([
                         } catch (e) {}
                         return cb && cb();
                     }
-                    Cryptpad.setAttribute(CROWDFUNDING_DRIVE_KEY, metrics, function (e) {
-                        if (!e) {
-                            return cb && cb();
-                        }
-                        try {
-                            ['visitCount', 'firstSeen', 'lastShownAtCount', 'lastShownAtTime'].forEach(function (k) {
-                                if (metrics[k] !== null && metrics[k] !== undefined) {
-                                    localStorage.setItem(CROWDFUNDING_PREFIX + k, String(metrics[k]));
-                                }
-                            });
-                        } catch (e) {}
+                    Cryptpad.setAttribute(CROWDFUNDING_DRIVE_KEY, metrics, function () {
                         cb && cb();
                     });
                 };
@@ -1143,7 +1138,9 @@ define([
                             scope: scope,
                             ts: now
                         }));
-                    } catch (e) {}
+                    } catch (e) {
+                        try { localStorage.removeItem(CROWDFUNDING_PREFIX + 'open_dedupe'); } catch (e2) {}
+                    }
                     crowdfundingLastOpenScope = scope;
                     crowdfundingLastOpenAt = now;
                     crowdfundingIncrementAction(cb);

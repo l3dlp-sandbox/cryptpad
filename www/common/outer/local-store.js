@@ -152,7 +152,7 @@ define([
         try {
             Object.keys(localStorage || {}).forEach(function (k) {
                 // Remove everything in localStorage except CACHE and FS_hash
-                if (/^CRYPTPAD_CACHE/.test(k) || /^LESS_CACHE/.test(k) || k === Constants.fileHashKey || /^CRYPTPAD_STORE|colortheme/.test(k) || /^cp_crowdfunding_/.test(k)) { return; }
+                if (/^CRYPTPAD_CACHE/.test(k) || /^LESS_CACHE/.test(k) || k === Constants.fileHashKey || /^CRYPTPAD_STORE|colortheme/.test(k) || (!isDeletion && /^cp_crowdfunding_/.test(k))) { return; }
                 localStorage.removeItem(k);
             });
         } catch (e) { console.error(e); }

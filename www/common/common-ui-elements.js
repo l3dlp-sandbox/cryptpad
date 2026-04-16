@@ -3396,7 +3396,6 @@ define([
 
         var todo = function (actionCount) {
             crowdfundingState = true;
-            common.getSframeChannel().query('Q_RECORD_CROWDFUNDING_SHOWN', { count: actionCount }, function () {});
             var dontShowAgain = function () {
                 common.setAttribute(['general', 'crowdfunding'], false);
                 Feedback.send('CROWDFUNDING_NEVER');
@@ -3409,7 +3408,7 @@ define([
                 {
                     name: Messages.crowdfunding_popup_no,
                     className: 'cancel',
-                    iconClass: 'snooze',
+                    iconClass: 'crowdfunding-snooze',
                     onClick: function () {
                         Feedback.send('CROWDFUNDING_NO');
                     }
@@ -3451,6 +3450,7 @@ define([
                 buttons: buttons
             });
             UI.openCustomModal(modal, { wide: true });
+            common.getSframeChannel().query('Q_RECORD_CROWDFUNDING_SHOWN', { count: actionCount }, function () {});
         };
 
         if (force) {
