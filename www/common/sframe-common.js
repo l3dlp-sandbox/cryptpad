@@ -1067,17 +1067,11 @@ define([
                 UIElements.displayCrowdfunding(funcs);
             };
             var privateData = ctx.metadataMgr.getPrivateData();
-            var inDrive = /^\/drive/;
-            var isDriveContext = inDrive.test(privateData.pathname || '');
-            var isReadOnlyContext = Boolean(privateData.readOnly);
-            var isReadOnlyFormResponse = privateData.app === 'form' && !privateData.form_auditorKey && ((!privateData.canEdit) || (isReadOnlyContext && !privateData.form_auditorHash));
-            var openScope = privateData.channel;
-            if (isDriveContext || isReadOnlyFormResponse || !openScope) {
-                showCrowdfunding();
-            } else {
-                ctx.sframeChan.query('Q_CROWDFUNDING_INCREMENT_OPEN', {
-                    scope: openScope
-                }, showCrowdfunding);
+            var isDriveContext = privateData.app === 'drive';
+            var isReadOnlyFormResponse = privateData.app === 'form' && priv.readOnly && !priv.form_auditorHash && !priv.form_auditorKey;
+            var skipCrowdfunding = privateData.secureIframe === true || privateData.unsafeIframe === true || isReadOnlyFormResponse || isDriveContext;
+            if (!skipCrowdfunding) {
+                ctx.sframeChan.query('Q_CROWDFUNDING_INCREMENT_OPEN', showCrowdfunding);
             }
 
             ctx.sframeChan.ready();

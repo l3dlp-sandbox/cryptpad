@@ -3394,7 +3394,7 @@ define([
         if (!priv.channel) { return; }
         if (priv.app === 'form' && priv.readOnly && !priv.form_auditorHash && !priv.form_auditorKey) { return; }
 
-        var todo = function (actionCount) {
+        var todo = function () {
             crowdfundingState = true;
             var dontShowAgain = function () {
                 common.setAttribute(['general', 'crowdfunding'], false);
@@ -3450,12 +3450,11 @@ define([
                 buttons: buttons
             });
             UI.openCustomModal(modal, { wide: true });
-            common.getSframeChannel().query('Q_RECORD_CROWDFUNDING_SHOWN', { count: actionCount }, function () {});
         };
 
         if (force) {
             crowdfundingState = true;
-            return void todo(0);
+            return void todo();
         }
 
         if (AppConfig.disableCrowdfundingMessages) { return; }
@@ -3470,7 +3469,8 @@ define([
                     crowdfundingState = false;
                     return;
                 }
-                todo(result.actionCount);
+                todo();
+                common.getSframeChannel().query('Q_RECORD_CROWDFUNDING_SHOWN', {}, function () {});
             });
         });
     };

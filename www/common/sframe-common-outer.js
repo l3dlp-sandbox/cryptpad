@@ -1019,13 +1019,14 @@ define([
                 });
                 var CROWDFUNDING_PREFIX = 'cp_crowdfunding_';
                 var CROWDFUNDING_DRIVE_KEY = ['general', 'crowdfunding_metrics'];
+                // First action count threshold before showing the banner (10 actions)
                 var CROWDFUNDING_MIN_ACTIONS = 10;
+                // Additional actions required after each shown banner (15 actions)
                 var CROWDFUNDING_ACTIONS_INTERVAL = 15;
+                // Quota usage threshold for quota-based banner display (10 MB)
                 var CROWDFUNDING_MIN_QUOTA_MB = 10;
+                // Cooldown between banner displays based on last shown timestamp (24 hours)
                 var CROWDFUNDING_ONE_DAY_MS = 24 * 60 * 60 * 1000;
-                var CROWDFUNDING_OPEN_DEDUPE_MS = 15000;
-                var crowdfundingLastOpenScope = null;
-                var crowdfundingLastOpenAt = 0;
                 var crowdfundingGetLS = function () {
                     var get = function (suffix) {
                         var k = CROWDFUNDING_PREFIX + suffix;
@@ -1111,38 +1112,13 @@ define([
                 });
                 sframeChan.on('Q_RECORD_CROWDFUNDING_SHOWN', function (data, cb) {
                     crowdfundingReadMetrics(function (metrics) {
-                        if (data && typeof data.count === 'number') { metrics.lastShownAtCount = data.count; }
+                        metrics.lastShownAtCount = (data && typeof data.count === 'number') ? data.count : (metrics.visitCount || 0);
                         metrics.lastShownAtTime = Date.now();
                         crowdfundingWriteMetrics(metrics, cb);
                     });
                 });
                 sframeChan.on('Q_CROWDFUNDING_INCREMENT_OPEN', function (data, cb) {
                     if (readOnly) { return cb && cb(); }
-                    var requestedScope = data && data.scope;
-                    var scope = (secret && secret.channel) || requestedScope;
-                    if (!scope) { return cb && cb(); }
-                    var now = Date.now();
-                    if (crowdfundingLastOpenScope === scope &&
-                        (now - crowdfundingLastOpenAt) < CROWDFUNDING_OPEN_DEDUPE_MS) {
-                        return cb && cb();
-                    }
-                    try {
-                        var dedupeRaw = localStorage.getItem(CROWDFUNDING_PREFIX + 'open_dedupe');
-                        var dedupe = dedupeRaw ? JSON.parse(dedupeRaw) : null;
-                        if (dedupe && dedupe.scope === scope &&
-                            typeof dedupe.ts === 'number' &&
-                            (now - dedupe.ts) < CROWDFUNDING_OPEN_DEDUPE_MS) {
-                            return cb && cb();
-                        }
-                        localStorage.setItem(CROWDFUNDING_PREFIX + 'open_dedupe', JSON.stringify({
-                            scope: scope,
-                            ts: now
-                        }));
-                    } catch (e) {
-                        try { localStorage.removeItem(CROWDFUNDING_PREFIX + 'open_dedupe'); } catch (e2) {}
-                    }
-                    crowdfundingLastOpenScope = scope;
-                    crowdfundingLastOpenAt = now;
                     crowdfundingIncrementAction(cb);
                 });
 
