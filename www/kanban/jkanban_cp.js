@@ -313,9 +313,16 @@ define([
                         if (target.classList.contains('kanban-trash')) {
                             list.splice(index1, 1);
                             if (list.indexOf(id) === -1) {
-                                delete self.options.boards.data[id];
+                                var board = self.options.boards.data[id]
+                                var boardItems = board.item;
+                                boardItems.forEach(function(item) {
+                                    delete self.options.boards.items[item];
+                                });
+                                delete board;
                             }
                             self.onChange();
+                            self.setBoards(self.options.boards);
+
                             return;
                         }
 
