@@ -501,7 +501,7 @@ define([
                     });
                 };
                 _field.tokenfield.on('tokenfield:createdtoken', commitTags);
-                _field.tokenfield.on('tokenfield:editedoken', commitTags);
+                _field.tokenfield.on('tokenfield:editedtoken', commitTags);
                 _field.tokenfield.on('tokenfield:removedtoken', commitTags);
 
                 $(tagsContainer).click(e => {
