@@ -1019,13 +1019,13 @@ define([
                 });
                 var CROWDFUNDING_PREFIX = 'cp_crowdfunding_';
                 var CROWDFUNDING_DRIVE_KEY = ['general', 'crowdfunding_metrics'];
-                // First action count threshold before showing the banner (10 actions)
+                // First action (opening or creating a document) count threshold before showing the banner
                 var CROWDFUNDING_MIN_ACTIONS = 10;
-                // Additional actions required after each shown banner (15 actions)
+                // Additional actions required after each shown banner
                 var CROWDFUNDING_ACTIONS_INTERVAL = 15;
-                // Quota usage threshold for quota-based banner display (10 MB)
+                // Quota usage threshold for quota-based banner display
                 var CROWDFUNDING_MIN_QUOTA_MB = 10;
-                // Cooldown between banner displays based on last shown timestamp (24 hours)
+                // Cooldown between banner displays based on last shown timestamp
                 var CROWDFUNDING_ONE_DAY_MS = 24 * 60 * 60 * 1000;
                 var crowdfundingGetLS = function () {
                     var get = function (suffix) {
