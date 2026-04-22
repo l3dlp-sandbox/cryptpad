@@ -155,9 +155,7 @@ define([
         var checkDefaultTheme = function(cb) {
             var privateData = framework._.cpNfInner.metadataMgr.getPrivateData();
             if (!privateData.settings['diagram'] || !privateData.settings['diagram'].mode) {
-                framework._.sfCommon.setAttribute(['diagram', 'mode'], 'sketch', function() {
-                    cb('sketch');
-                });
+                cb('sketch');
             } else {
                 cb(privateData.settings['diagram'].mode);
             }
@@ -205,17 +203,11 @@ define([
         // starting the CryptPad framework
         framework.start();
 
-        var isLoading = false;
         var loadDiagram = function () {
-            if (isLoading) {
-                return;
-            }
-            isLoading = true;
             checkDefaultTheme(function(theme) {
                 var defaultTheme = theme;
                 parameters.set('ui', defaultTheme);
                 drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?' + parameters;
-                setTimeout(() => { isLoading = false; }, 300);
             });
         };
 
