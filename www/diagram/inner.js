@@ -152,23 +152,15 @@ define([
             }, true
         );
 
-        var themes = JSON.parse(localStorage.original.getItem('drawio-theme')) || [];
-
-        var checkTheme = function (fileChannel) {
-            if (themes.length) { return themes.find(obj => obj.hasOwnProperty(fileChannel)); };
-        };
-
-        var checkDefaultTheme = function () {
-            privateData = framework._.cpNfInner.metadataMgr.getPrivateData();
-            var defaultTheme;
-            if (framework.isIntegrated()) {
-                defaultTheme = 'kennedy';
-            } else if (checkTheme(privateData.channel)) {
-                defaultTheme = themes.find(item => item[privateData.channel])?.[privateData.channel];
+        var checkDefaultTheme = function(cb) {
+            var privateData = framework._.cpNfInner.metadataMgr.getPrivateData();
+            if (!privateData.settings['diagram'] || !privateData.settings['diagram'].mode) {
+                framework._.sfCommon.setAttribute(['diagram', 'mode'], 'sketch', function() {
+                    cb('sketch');
+                });
             } else {
-                defaultTheme = 'sketch';
+                cb(privateData.settings['diagram'].mode);
             }
-            return defaultTheme;
         };
 
         var parameters = new URLSearchParams({
@@ -186,7 +178,6 @@ define([
             saveAndExit: 0,
             noExitBtn: 1,
             browser: 0,
-            ui: checkDefaultTheme(),
             pv: 0,
 
             noDevice: 1,
@@ -214,11 +205,18 @@ define([
         // starting the CryptPad framework
         framework.start();
 
+        var isLoading = false;
         var loadDiagram = function () {
-            var defaultTheme = checkDefaultTheme();
-            parameters.set('ui', defaultTheme);
-            drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?'
-                + parameters;
+            if (isLoading) {
+                return;
+            }
+            isLoading = true;
+            checkDefaultTheme(function(theme) {
+                var defaultTheme = theme;
+                parameters.set('ui', defaultTheme);
+                drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?' + parameters;
+                setTimeout(() => { isLoading = false; }, 300);
+            });
         };
 
         window.addEventListener("message", (event) => {
@@ -234,14 +232,10 @@ define([
             }
         }, false);
 
-        var setTheme = function (fileChannel, theme) {
-            if (checkTheme(fileChannel)) {
-                var currentTheme = themes.find(obj => obj.hasOwnProperty(fileChannel));
-                currentTheme[fileChannel] = theme;
-            } else {
-                themes.push({[fileChannel]: theme});
-            }
-            localStorage.original.setItem('drawio-theme', JSON.stringify(themes));
+        var setTheme = function (theme, cb) {
+            framework._.sfCommon.setAttribute(['diagram', 'mode'], theme, function() {
+                cb();
+            });
         };
 
         var mkModeButton = function (framework) {
@@ -261,28 +255,31 @@ define([
                         parameters.set('ui', mode);
                         drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?'
                         + parameters;
-                        privateData = framework._.cpNfInner.metadataMgr.getPrivateData();
-                        setTheme(privateData.channel, mode);
-                        $('.cp-dropdown-content').find('.cp-dropdown-element-active').removeClass('cp-dropdown-element-active');
-                        $self.addClass('cp-dropdown-element-active');
-                        $self.closest('li').focus();
-                        $('.cp-dropdown-content').hide();
+                        setTheme(mode, function() {
+                            $('.cp-dropdown-content').find('.cp-dropdown-element-active').removeClass('cp-dropdown-element-active');
+                            $self.addClass('cp-dropdown-element-active');
+                            $self.closest('li').focus();
+                            $('.cp-dropdown-content').hide();
+}                       );
                     },
                 });
             });
-            var $drawer = UIElements.createDropdown({
-                text: Messages.themeButton,
-                options: types,
-                common: framework._.sfCommon,
-                iconCls: 'color-palette',
-                initialValue: parameters.get('ui') || checkDefaultTheme()
+            checkDefaultTheme(function(theme) {
+                var $drawer = UIElements.createDropdown({
+                    text: Messages.themeButton,
+                    options: types,
+                    common: framework._.sfCommon,
+                    iconCls: 'color-palette',
+                    initialValue: parameters.get('ui') || theme
+                });
+                framework._.toolbar.$theme = $drawer.find('ul.cp-dropdown-content');
+                framework._.toolbar.$bottomL.append($drawer);
+                $drawer.addClass('cp-toolbar-appmenu');
+                $drawer.on('click', function () {
+                    $('a[data-value="' + parameters.get('ui') || theme + '"]').addClass('cp-dropdown-element-active');
+                });
             });
-            framework._.toolbar.$theme = $drawer.find('ul.cp-dropdown-content');
-            framework._.toolbar.$bottomL.append($drawer);
-            $drawer.addClass('cp-toolbar-appmenu');
-            $drawer.on('click', function () {
-                $('a[data-value="' + parameters.get('ui') || checkDefaultTheme() + '"]').addClass('cp-dropdown-element-active');
-            });
+
         };
         mkModeButton(framework);
         
