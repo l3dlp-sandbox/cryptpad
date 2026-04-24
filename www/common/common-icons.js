@@ -85,7 +85,7 @@ define([
         "share": "share-2",
         "download": "hard-drive-download",
         "destroy": "shredder",
-        "donate": "hand-coins",
+        "donate": "hand-heart",
         "send": "send",
         "cloud-upload": "cloud-upload",
         "print": "printer",

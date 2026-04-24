@@ -1024,9 +1024,9 @@ define([
                 // Additional actions required after each shown banner
                 var CROWDFUNDING_ACTIONS_INTERVAL = 15;
                 // Quota usage threshold for quota-based banner display
-                var CROWDFUNDING_MIN_QUOTA_MB = 10;
-                // Cooldown between banner displays based on last shown timestamp
-                var CROWDFUNDING_ONE_DAY_MS = 24 * 60 * 60 * 1000;
+                var CROWDFUNDING_MIN_QUOTA_MB = 50;
+                // Cooldown between banner displays based on last shown timestamp in milliseconds
+                var CROWDFUNDING_COOLDOWN_MS = 24 * 60 * 60 * 1000;
                 var crowdfundingGetLS = function () {
                     var get = function (suffix) {
                         var k = CROWDFUNDING_PREFIX + suffix;
@@ -1087,7 +1087,7 @@ define([
                         var lastShownAtTime = metrics.lastShownAtTime || 0;
                         var now = Date.now();
                         var nextThreshold = lastShownAtCount === 0 ? CROWDFUNDING_MIN_ACTIONS : lastShownAtCount + CROWDFUNDING_ACTIONS_INTERVAL;
-                        var enoughTimePassed = lastShownAtTime === 0 || (now - lastShownAtTime >= CROWDFUNDING_ONE_DAY_MS);
+                        var enoughTimePassed = lastShownAtTime === 0 || (now - lastShownAtTime >= CROWDFUNDING_COOLDOWN_MS);
                         var showFromActions = actionCount >= nextThreshold && enoughTimePassed;
                         if (showFromActions) {
                             return cb({
