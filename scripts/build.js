@@ -51,8 +51,6 @@ try {
 }
 
 var preferredLanguage = config.preferredLanguage;
-var langAliases = { 'zh': 'zh_Hans' };
-if (langAliases[preferredLanguage]) { preferredLanguage = langAliases[preferredLanguage]; }
 var Preferred;
 
 var noScriptContent = [ Messages.ui_jsRequired ];
