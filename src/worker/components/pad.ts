@@ -241,7 +241,7 @@ const _join: Callback = (ctx, clientId, data) => {
         });
     };
 
-    if (!isNew && channel.wc) {
+    if (!isNew) {
         return void preflightAnonAccess((ok) => {
             if (!ok) { return; }
             sendExistingState();
