@@ -632,6 +632,7 @@ define([
                 'tabindex': '0',
                 'data-key': id,
                 'data-user': room.isFriendChat ? userlist[0].curvePublic : '',
+                'aria-label': room.isFriendChat ? UI.getDisplayName(room.name) : room.name
             });
 
 
