@@ -134,6 +134,7 @@ define(req, function(AppConfig, Default, Language) {
         }
     };
 
+    Messages.contacts_muted = "Muted"; // XXX new key
     Messages.contacts_noFriends = "No chats yet";
     Messages.contacts_noFriendsInfo = "Add friends or join teams to begin chatting";
     Messages.contacts_historyCleared = "The chat history has been deleted for both parties"; // XXX

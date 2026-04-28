@@ -757,7 +757,7 @@ define([
                 title: Messages.contacts_online
             });
             var mute = h('span.cp-app-contacts-mute-indicator', {
-                title: Messages.contacts_mute,
+                title: Messages.contacts_muted,
                 style: isMuted ? '' : 'display: none;'
             }, Icons.get('mute'));
             var bottomRow = h('span.cp-app-contacts-bottom-row', [
