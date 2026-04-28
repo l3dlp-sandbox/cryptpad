@@ -693,7 +693,7 @@ define([
 
             var muteOption = {
                 tag: 'a',
-                content: [Icons.get('mute'), h('span', Messages.contacts_mute || 'Mute')],
+                content: [Icons.get('mute'), h('span', Messages.contacts_mute)],
                 action: function () {
                     var channel = state.channels[id];
                     if (!channel.isFriendChat) { return true; }
