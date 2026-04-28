@@ -537,7 +537,7 @@ define([
                 $info.html([
                     h('h2', Messages.contacts_noFriends),
                     h('ul', [
-                        h('li', Messages.share_noContactsNotLoggedIn),
+                        h('li', Messages.contacts_noFriendsInfo),
                     ])
                 ]);
                 $container.addClass('cp-app-contacts-no-chats');
