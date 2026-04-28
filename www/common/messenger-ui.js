@@ -952,11 +952,9 @@ define([
                     $messagebox.append(el_message);
                 });
                 normalizeLabels($messagebox);
-
                 common.getAttribute(['general', 'chat', 'cleared', id], function (err, val) {
                     if (val) { showBanner($(chatbox), id); }
                 });
-
                 var roomEl = markup.room(id, room, list);
 
                 var $parentEl;
