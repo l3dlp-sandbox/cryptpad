@@ -285,7 +285,8 @@ define([
                 class: 'cp-app-contacts-more-history',
                 tabindex: '0',
                 role: 'button',
-                'aria-label': Messages.contacts_fetchHistory
+                'aria-label': Messages.contacts_fetchHistory,
+                title: Messages.contacts_fetchHistory
             });
             moreHistory.append(Icons.get('history'));
 
@@ -358,7 +359,8 @@ define([
                 'class': 'cp-app-contacts-remove-history',
                 'tabindex': '0',
                 'role': 'button',
-                'aria-label': Messages.contacts_removeHistoryTitle
+                'aria-label': Messages.contacts_removeHistoryTitle,
+                'title': Messages.contacts_removeHistoryTitle
             });
             removeHistory.append(Icons.get('remove-history'));
 
