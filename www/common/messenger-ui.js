@@ -287,7 +287,7 @@ define([
                 role: 'button',
                 'aria-label': Messages.contacts_fetchHistory
             });
-            moreHistory.append(Icons.get('history', {title: Messages.contacts_fetchHistory}));
+            moreHistory.append(Icons.get('history'));
 
             var chan = state.channels[id];
             var displayName = UI.getDisplayName(chan.name || chan.displayName);
@@ -360,7 +360,7 @@ define([
                 'role': 'button',
                 'aria-label': Messages.contacts_removeHistoryTitle
             });
-            removeHistory.append(Icons.get('remove-history', {title: Messages.contacts_removeHistoryTitle}));
+            removeHistory.append(Icons.get('remove-history'));
 
             $(removeHistory).on('keydown', function (e) {
                 if (e.which === 13 || e.which === 32) {
