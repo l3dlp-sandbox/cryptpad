@@ -3422,6 +3422,7 @@ define([
                 });
             }
             if (Config.accounts_api && priv.accountName) {
+                content += ' ' + Messages.crowdfunding_popup_text2;
                 buttons.push({
                     name: Messages.features_f_subscribe,
                     className: 'primary',
