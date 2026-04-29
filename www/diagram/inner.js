@@ -196,6 +196,10 @@ define([
                 parameters.set('chrome', '1');
                 parameters.set('grid', '1');
             }
+            checkDefaultTheme(function(theme) {
+                var defaultTheme = theme;
+                parameters.set('ui', defaultTheme);
+            });
             drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?'
             + parameters;
         });
@@ -203,18 +207,8 @@ define([
         // starting the CryptPad framework
         framework.start();
 
-        var loadDiagram = function () {
-            checkDefaultTheme(function(theme) {
-                var defaultTheme = theme;
-                parameters.set('ui', defaultTheme);
-                drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?' + parameters;
-            });
-        };
-
         window.addEventListener("message", (event) => {
-            if (event.data?.q === 'EV_METADATA_UPDATE') {
-                loadDiagram();
-            } else if (event.source === drawioFrame.contentWindow) {
+            if (event.source === drawioFrame.contentWindow) {
                 var data = JSON.parse(event.data);
                 var eventType = data.event;
                 var handler = drawioHandlers[eventType];
