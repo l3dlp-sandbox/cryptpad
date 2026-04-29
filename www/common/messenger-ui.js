@@ -652,11 +652,12 @@ define([
                 }
             };
 
-            var rebuildDropdown = function (muted) {
+            var rebuildDropdown = function () {
                 if (!$dropdown || !$dropdown.setOptions) { return; }
                 var opts = [];
                 if (room.isFriendChat) {
-                    opts.push(muted ? unmuteOption : muteOption);
+                    var isCurrentlyMuted = curve && mutedUsers[curve];
+                    opts.push(isCurrentlyMuted ? unmuteOption : muteOption);
                     if (friendData.profile) {
                         opts.push(viewProfileOption);
                     }
@@ -675,7 +676,7 @@ define([
                     var curvePublic = channel.curvePublic;
                     var friend = contactsData[curvePublic] || friendData;
                     muteUser(friend);
-                    rebuildDropdown(true);
+                    rebuildDropdown();
                     return true;
                 }
             };
@@ -687,7 +688,7 @@ define([
                     if (!channel.isFriendChat) { return true; }
                     var curvePublic = channel.curvePublic;
                     unmuteUser(curvePublic);
-                    rebuildDropdown(false);
+                    rebuildDropdown();
                     return true;
                 }
             };
@@ -714,6 +715,7 @@ define([
             var $dropdownMenu = $dropdown.find('.cp-dropdown-content');
             $dropdownMenu.css('position', 'fixed');
             $dropdown.find('button').on('click', function () {
+                rebuildDropdown();
                 var rect = this.getBoundingClientRect();
                 var menuWidth = $dropdownMenu.outerWidth() || 150;
                 var viewportWidth = window.innerWidth;
@@ -1048,9 +1050,7 @@ define([
                     ]);
                     common.displayAvatar($(avatar), data.avatar, data.name, Util.noop, data.uid, data.badge);
                     $(button).click(function () {
-                        unmuteUser(curve, button);
-                        execCommand('UNMUTE_USER', curve, function (e, data) {
-                            if (e) { return void console.error(e); }
+                        unmuteUser(curve, function () {
                             $(button).closest('div').remove();
                             if (!data) { $button.hide(); }
                             $('.cp-app-contacts-friend[data-user="'+curve+'"]')
