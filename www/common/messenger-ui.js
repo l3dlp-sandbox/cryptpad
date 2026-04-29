@@ -239,35 +239,6 @@ define([
             }, []);
         };
 
-        var showBanner = function ($chat, id) {
-            if (!$chat.length) { return; }
-            var $messagebox = $chat.find('.cp-app-contacts-messages');
-            if (!$messagebox.length) { return; }
-
-            $chat.find('.cp-app-contacts-history-cleared').remove();
-
-            var closeButton = h('button.cp-help-close',
-                { 'aria-label': Messages.history_close },
-                [Icons.get('close')]);
-            var container = h('div.cp-help-container.cp-app-contacts-history-cleared', [
-                Icons.get('help'),
-                h('span.cp-help-text', Messages.contacts_historyCleared),
-                closeButton
-            ]);
-
-            $(closeButton).click(function () {
-                $(container).remove();
-                common.setAttribute(['general', 'chat', 'cleared', id], false);
-            });
-
-            var $header = $chat.find('.cp-app-contacts-header');
-            if ($header.length) {
-                $header.after(container);
-            } else {
-                $messagebox.before(container);
-            }
-        };
-
         var clearChannel = function (id) {
             var $chat = $(getChat(id));
             if (state.channels && state.channels[id]) {
@@ -276,9 +247,15 @@ define([
             if ($chat.length) {
                 $chat.find('.cp-app-contacts-messages').html('');
                 $chat.find('.cp-app-contacts-message').remove();
-                showBanner($chat, id);
             }
-            common.setAttribute(['general', 'chat', 'cleared', id], true);
+        };
+
+        var displaySystemMessage = function (id, message) {
+            var $messagebox = $(getChat(id)).find('.cp-app-contacts-messages');
+            if (!$messagebox.length) { return; }
+            $messagebox.append(h('div.cp-app-contacts-message.cp-app-contacts-system-notification', message));
+            normalizeLabels($messagebox);
+            scrollChatToBottom();
         };
         markup.chatbox = function (id, data, curvePublic) {
             var moreHistory = h('span', {
@@ -372,11 +349,6 @@ define([
             }).click(function () {
                 UI.confirm(Messages.contacts_confirmRemoveHistory, function (yes) {
                     if (!yes) { return; }
-                    try {
-                        clearChannel(id);
-                    } catch (err) {
-                        console.error(err);
-                    }
 
                     execCommand('CLEAR_OWNED_CHANNEL', id, function (e) {
                         if (e) {
@@ -385,8 +357,8 @@ define([
                             return;
                         }
                         clearChannel(id);
+                        send(Messages.contacts_historyCleared);
                     });
-                    showBanner(getChat(id), id);
                 });
             });
 
@@ -808,6 +780,10 @@ define([
 
             debug(message);
 
+            if (message.text === Messages.contacts_historyCleared) {
+                displaySystemMessage(chanId, message.text);
+                return;
+            }
             var el_message = markup.message(message);
 
             if (message.type === 'MSG') {
@@ -831,6 +807,8 @@ define([
 
             var $messagebox = $chat.find('.cp-app-contacts-messages');
             var shouldScroll = isBottomedOut($messagebox);
+
+            $messagebox.find('.cp-app-contacts-system-notification').remove();
 
             $messagebox.append(el_message);
 
@@ -955,9 +933,6 @@ define([
                     $messagebox.append(el_message);
                 });
                 normalizeLabels($messagebox);
-                common.getAttribute(['general', 'chat', 'cleared', id], function (err, val) {
-                    if (val) { showBanner($(chatbox), id); }
-                });
                 var roomEl = markup.room(id, room, list);
 
                 var $parentEl;
