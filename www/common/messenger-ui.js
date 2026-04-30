@@ -250,11 +250,11 @@ define([
             }
         };
 
-        var displaySystemMessage = function (id, message) {
+        var displaySystemMessage = function (id, icon, message) {
             var $messagebox = $(getChat(id)).find('.cp-app-contacts-messages');
             if (!$messagebox.length) { return; }
-            var noticeElement = h('div.cp-app-contacts-message.cp-app-contacts-system-notification', message);
-            $messagebox.append(noticeElement);
+            var content = icon ? [Icons.get(icon), h('span', message)] : message;
+            $messagebox.append(h('div.cp-app-contacts-message.cp-app-contacts-system-notification', content));
             normalizeLabels($messagebox);
             scrollChatToBottom();
         };
@@ -1151,7 +1151,7 @@ define([
             }
             if (cmd === 'CLEAR_CHANNEL') {
                 clearChannel(data);
-                displaySystemMessage(data, Messages.contacts_historyCleared);
+                displaySystemMessage(data, 'clear-canvas', Messages.contacts_historyCleared);
                 return;
             }
             if (cmd === 'PADCHAT_READY') {
