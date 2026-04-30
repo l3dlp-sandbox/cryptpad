@@ -251,7 +251,7 @@ define([
             }
         };
 
-        var displaySystemMessage = function (id, icon, message) {
+        var displaySystemMessage = function (id, message, icon) {
             var $messagebox = $(getChat(id)).find('.cp-app-contacts-messages');
             if (!$messagebox.length) { return; }
             var content = icon ? [Icons.get(icon), h('span', message)] : message;
@@ -1158,7 +1158,7 @@ define([
             }
             if (cmd === 'CLEAR_CHANNEL') {
                 clearChannel(data);
-                displaySystemMessage(data, 'clear-canvas', Messages.contacts_historyCleared);
+                displaySystemMessage(data,  Messages.contacts_historyCleared, 'clear-canvas');
                 return;
             }
             if (cmd === 'PADCHAT_READY') {
