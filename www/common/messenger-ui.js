@@ -12,7 +12,8 @@ define([
     '/common/hyperscript.js',
     '/common/diffMarked.js',
     '/common/common-icons.js',
-], function ($, Messages, Util, UI, UIElements, Badges, h, DiffMd, Icons) {
+    '/customize/pages.js',
+], function ($, Messages, Util, UI, UIElements, Badges, h, DiffMd, Icons, Pages) {
     'use strict';
 
     var debug = console.log;
@@ -509,7 +510,10 @@ define([
                 $info.html([
                     h('h2', Messages.contacts_noFriends),
                     h('ul', [
-                        h('li', Messages.contacts_noFriendsInfo),
+                        h('li', [
+                                UI.createHelper(Pages.localizeDocsLink(' https://docs.cryptpad.org/en/user_guide/collaboration.html#contacts'), Messages.contacts_noFriendsInfo),
+                                Messages.contacts_noFriendsInfo
+                        ]),
                     ])
                 ]);
                 $container.addClass('cp-app-contacts-no-chats');

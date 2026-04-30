@@ -305,6 +305,17 @@
 
         .cp-app-contacts-info {
             padding: 20px;
+            a {
+                color: @msg-color;
+                color: var(--msg-color);
+                &:focus-visible {
+                    outline: none;
+                    svg {
+                        outline: @variables_focus_style;
+                        border-radius: @variables_radius;
+                    }
+                }
+            }
         }
         .cp-app-contacts-header {
             background-color: @msg-bg-color-lighter;
