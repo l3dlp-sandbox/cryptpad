@@ -116,7 +116,6 @@ const factory = (Crypto, Hash, Util, Realtime, Messaging,
 
     var getChannelMessagesSince = function (ctx, channel, data, keys) {
         var network = ctx.store.network;
-        console.log('Fetching [%s] messages since [%s]', channel.id, data.lastKnownHash || '');
 
         if (channel.isPadChat || channel.isTeamChat) {
             // We need to use GET_HISTORY_RANGE to make sure we won't get the full history
