@@ -629,7 +629,10 @@ define([
                 content: [Icons.get('unfriend'), h('span', Messages.contacts_remove)],
                 action: function () {
                     var channel = state.channels[id];
-                    if (!channel.isFriendChat) { return; }
+                    if (!channel.isFriendChat) {
+                        UI.warn(Messages.error);
+                        return;
+                    }
                     var curvePublic = channel.curvePublic;
                     var friend = contactsData[curvePublic] || friendData;
                     var name = Util.fixHTML(UI.getDisplayName(friend.name || friend.displayName));
