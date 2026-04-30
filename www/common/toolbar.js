@@ -513,7 +513,8 @@ MessengerUI, Messages, Pages, PadTypes, Icons) {
         var notif = h('span.cp-collapsed-notif');
 
         var $button = $(h('button.cp-toolbar-collapse', {
-                'aria-label': Messages.toolbar_collapse
+                'aria-label': Messages.toolbar_collapse,
+                'title': Messages.toolbar_collapse
             }, [
                 icon,
                 notif
@@ -537,7 +538,8 @@ MessengerUI, Messages, Pages, PadTypes, Icons) {
 
             $button.find('[data-lucide]').replaceWith(newIcon);
             $button.attr({
-                'aria-label': hidden ? Messages.toolbar_expand : Messages.toolbar_collapse
+                'aria-label': hidden ? Messages.toolbar_expand : Messages.toolbar_collapse,
+                'title': hidden ? Messages.toolbar_expand : Messages.toolbar_collapse
             });
 
             if (!hidden) { $(notif).hide(); }
