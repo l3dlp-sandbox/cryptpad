@@ -167,7 +167,6 @@ const _join: Callback = (ctx, clientId, data) => {
     }
 
     const isNew = typeof channels[channelId] === "undefined";
-    const isReloadNavigation = Boolean(data?.isReloadNavigation);
     const isAnonymousSession = !store.loggedIn;
 
     // Create or get existing channel object
@@ -231,10 +230,7 @@ const _join: Callback = (ctx, clientId, data) => {
         };
 
         if (!isAnonymousSession) { return void allow(); }
-        if (!store.anon_rpc) {
-            if (isReloadNavigation && channel.wc) { return void allow(); }
-            return void (isReloadNavigation ? deny() : allow());
-        }
+        if (!store.anon_rpc) { return void allow(); }
         _getMetadata(ctx, clientId, { channel: channelId }, md => {
             if (md?.rejected) { return void deny(); }
             allow();

@@ -19,21 +19,11 @@ define(['/common/common-util.js'], function (Util) {
         var metadata= conf.metadata || {};
         var versionHash = conf.versionHash;
         var validateKey = metadata.validateKey;
-        var isReloadNavigation = false;
         var onConnect = conf.onConnect || function () { };
         var onError = conf.onError || function () { };
         var onReady = conf.onReady || function () { };
         var lastTime; // Time of last patch (if versioned link);
         conf = undefined;
-        try {
-            var navEntry = window.performance && window.performance.getEntriesByType &&
-                window.performance.getEntriesByType('navigation')[0];
-            if (navEntry && navEntry.type) {
-                isReloadNavigation = navEntry.type === 'reload';
-            } else if (window.performance && window.performance.navigation) {
-                isReloadNavigation = window.performance.navigation.type === 1;
-            }
-        } catch (e) {}
 
         if (versionHash) { readOnly = true; }
 
@@ -154,8 +144,7 @@ define(['/common/common-util.js'], function (Util) {
             channel: channel || null,
             readOnly: readOnly,
             versionHash: versionHash,
-            metadata: metadata,
-            isReloadNavigation: isReloadNavigation
+            metadata: metadata
         });
     };
 
