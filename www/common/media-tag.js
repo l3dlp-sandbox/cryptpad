@@ -575,7 +575,7 @@ var factory = function (Util) {
     var copyAttributes = function (origin, dest) {
         Object.keys(origin.attributes).forEach(function (i) {
             if (!/^data-attr/.test(origin.attributes[i].name)) { return; }
-            var name = origin.attributes[i].name.slice(10);
+            var name = origin.attributes[i].name.slice(10).toLowerCase();
             // Ignore attributes filtered out by the sanitizer
             if (name === "src") { return; }
             if (name === "srcdoc") { return; }
