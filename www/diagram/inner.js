@@ -203,6 +203,8 @@ define([
                 var defaultTheme = theme;
                 parameters.set('ui', defaultTheme);
             });
+            var isReadOnly = framework.isReadOnly() ? 0 : 1;
+            parameters.set('chrome', isReadOnly);
             drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?'
             + parameters;
         };
