@@ -232,11 +232,11 @@ const _join: Callback = (ctx, clientId, data) => {
 
         if (!isAnonymousSession) { return void allow(); }
         if (!store.anon_rpc) {
+            if (isReloadNavigation && channel.wc) { return void allow(); }
             return void (isReloadNavigation ? deny() : allow());
         }
         _getMetadata(ctx, clientId, { channel: channelId }, md => {
             if (md?.rejected) { return void deny(); }
-            if (isReloadNavigation && md?.error) { return void deny(); }
             allow();
         });
     };
