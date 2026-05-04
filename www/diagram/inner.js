@@ -196,16 +196,29 @@ define([
                 parameters.set('chrome', '1');
                 parameters.set('grid', '1');
             }
+        });
+
+         var loadDiagram = function () {
             checkDefaultTheme(function(theme) {
                 var defaultTheme = theme;
                 parameters.set('ui', defaultTheme);
             });
             drawioFrame.src = ApiConfig.httpSafeOrigin + '/components/drawio/src/main/webapp/index.html?'
             + parameters;
-        });
+        };
 
         // starting the CryptPad framework
         framework.start();
+
+        //wait for metadata to update before checking the theme and loading Drawio UI
+        var metadataMgr = framework._.sfCommon.getMetadataMgr();
+        var onChange = function () {
+            var privateData = metadataMgr.getPrivateData();
+            if (!privateData.settings.toolbar) { return; }
+            loadDiagram();
+            metadataMgr.off('change', onChange);
+        };
+        metadataMgr.onChange(onChange);
 
         window.addEventListener("message", (event) => {
             if (event.source === drawioFrame.contentWindow) {
