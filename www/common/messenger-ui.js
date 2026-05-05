@@ -367,6 +367,7 @@ define([
             var avatarDiv = h('div.cp-avatar-container', avatar);
 
             var backButton = h('span.cp-app-contacts-back', {
+                'aria-label': Messages.form_backButton,
                 title: Messages.form_backButton,
             }, Icons.get('arrow-left'));
             $(backButton).click(function () {
