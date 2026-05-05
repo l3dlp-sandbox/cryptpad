@@ -1022,7 +1022,7 @@ define([
                 // First action (opening or creating a document) count threshold before showing the banner
                 var CROWDFUNDING_MIN_ACTIONS = 5;
                 // Additional actions required after each shown banner
-                var CROWDFUNDING_ACTIONS_INTERVAL = 15;
+                var CROWDFUNDING_ACTIONS_INTERVAL = 10;
                 // Quota usage threshold for quota-based banner display
                 var CROWDFUNDING_MIN_QUOTA_MB = 50;
                 // Cooldown between banner displays based on last shown timestamp in milliseconds
