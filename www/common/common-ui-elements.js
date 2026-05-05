@@ -3394,6 +3394,9 @@ define([
 
         var todo = function () {
             crowdfundingState = true;
+            var recordShown = function () {
+                common.getSframeChannel().query('Q_RECORD_CROWDFUNDING_SHOWN', {}, function () {});
+            };
             var dontShowAgain = function () {
                 common.setAttribute(['general', 'crowdfunding'], false);
                 Feedback.send('CROWDFUNDING_NEVER');
@@ -3406,6 +3409,7 @@ define([
                     className: 'cancel',
                     iconClass: 'crowdfunding-snooze',
                     onClick: function () {
+                        recordShown();
                         Feedback.send('CROWDFUNDING_NO');
                     }
                 }
@@ -3416,6 +3420,7 @@ define([
                     className: 'primary',
                     iconClass: 'crowdfunding-donate',
                     onClick: function () {
+                        recordShown();
                         common.openURL(priv.accounts.donateURL);
                         Feedback.send('CROWDFUNDING_YES');
                     }
@@ -3428,6 +3433,7 @@ define([
                     className: 'primary',
                     iconClass: 'crowdfunding-donate2',
                     onClick: function () {
+                        recordShown();
                         common.openURL('/accounts/');
                         Feedback.send('CROWDFUNDING_SUBSCRIBE');
                     }
@@ -3438,6 +3444,7 @@ define([
                 className: 'cancel left',
                 iconClass: 'close',
                 onClick: function () {
+                    recordShown();
                     dontShowAgain();
                 }
             });
@@ -3467,7 +3474,6 @@ define([
                     return;
                 }
                 todo();
-                common.getSframeChannel().query('Q_RECORD_CROWDFUNDING_SHOWN', {}, function () {});
             });
         });
     };

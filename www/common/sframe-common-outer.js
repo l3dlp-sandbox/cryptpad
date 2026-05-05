@@ -1020,7 +1020,7 @@ define([
                 var CROWDFUNDING_PREFIX = 'cp_crowdfunding_';
                 var CROWDFUNDING_DRIVE_KEY = ['general', 'crowdfunding_metrics'];
                 // First action (opening or creating a document) count threshold before showing the banner
-                var CROWDFUNDING_MIN_ACTIONS = 10;
+                var CROWDFUNDING_MIN_ACTIONS = 5;
                 // Additional actions required after each shown banner
                 var CROWDFUNDING_ACTIONS_INTERVAL = 15;
                 // Quota usage threshold for quota-based banner display
