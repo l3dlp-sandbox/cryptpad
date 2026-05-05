@@ -3460,7 +3460,7 @@ define([
 
         crowdfundingState = true;
         common.getAttribute(['general', 'crowdfunding'], function (err, val) {
-            if (err || val === false) { crowdfundingState = false; return; }
+            if ((err && common.isLoggedIn()) || val === false) { crowdfundingState = false; return; }
             common.getSframeChannel().query('Q_CROWDFUNDING_SHOULD_SHOW', null, function (err, result) {
                 if (err || !result || !result.show) {
                     crowdfundingState = false;
