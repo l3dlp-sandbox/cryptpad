@@ -162,7 +162,15 @@ define(req, function(AppConfig, Default, Language) {
     Messages.contacts_noFriendsInfo = "Start by adding someone to begin a conversation.";
     Messages.contacts_historyCleared = "The chat history has been deleted for both parties"; // XXX
     Messages.contacts_confirmRemoveHistory = "Are you sure you want to delete chat history? Messages will be removed for everyone and cannot be restored."
-    return Messages; // XXX existing key
+
+    Messages.form_input_ph_text = "Your answer here"; // XXX used in form input placeholders, should be generic enough to be used in all contexts
+    Messages.form_input_ph_number = "Enter a number"; // XXX same as above but for number inputs
+    // text & number were missing from the existing list
+    // "form_input_ph_email": "email@example.com",
+    // "form_input_ph_url": "https://example.com",
+
+    Messages.form_date_time = "Select date and time";
+    return Messages;
 
 });
 }());
