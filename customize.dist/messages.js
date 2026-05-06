@@ -172,6 +172,12 @@ define(req, function(AppConfig, Default, Language) {
     Messages.form_date_time = "Select date and time";
     Messages.sent_chatMessage = "{0} has sent you a message"; // XXX
 
+    /// XXX
+    // To be edited for the Spring Release
+    // Messages.dontShowAgain = "Don't show again";
+    // Messages.crowdfunding_popup_text = "<h3>We need your help!</h3>To ensure that CryptPad is actively developed, consider supporting the project via the OpenCollective page, where you can see our <b>Roadmap</b> and <b>Funding goals</b>."
+    Messages.crowdfunding_popup_text2 = "Alternatively, you can subscribe on this instance." // XXX
+
     return Messages;
 
 });
