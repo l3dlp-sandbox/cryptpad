@@ -3403,17 +3403,23 @@ define([
             };
 
             var content = Messages.crowdfunding_popup_text;
-            var buttons = [
-                {
-                    name: Messages.crowdfunding_popup_no,
-                    className: 'cancel',
-                    iconClass: 'crowdfunding-snooze',
-                    onClick: function () {
-                        recordShown();
-                        Feedback.send('CROWDFUNDING_NO');
-                    }
+            var buttons = [{
+                name: Messages.dontShowAgain,
+                className: 'cancel left',
+                iconClass: 'close',
+                onClick: function () {
+                    recordShown();
+                    dontShowAgain();
                 }
-            ];
+            }, {
+                name: Messages.crowdfunding_popup_no,
+                className: 'cancel',
+                iconClass: 'crowdfunding-snooze',
+                onClick: function () {
+                    recordShown();
+                    Feedback.send('CROWDFUNDING_NO');
+                }
+            }];
             if (!Config.removeDonateButton) {
                 buttons.push({
                     name: Messages.crowdfunding_button2,
@@ -3439,20 +3445,12 @@ define([
                     }
                 });
             }
-            buttons.push({
-                name: Messages.dontShowAgain,
-                className: 'cancel left',
-                iconClass: 'close',
-                onClick: function () {
-                    recordShown();
-                    dontShowAgain();
-                }
-            });
             var modal = UI.dialog.customModal(content, {
                 force: true,
                 scrollable: true,
                 buttons: buttons
             });
+            $(modal).addClass('cp-crowdfunding-modal');
             UI.openCustomModal(modal, { wide: true });
         };
 
