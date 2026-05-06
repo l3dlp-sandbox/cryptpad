@@ -178,6 +178,11 @@ define(req, function(AppConfig, Default, Language) {
     // Messages.crowdfunding_popup_text = "<h3>We need your help!</h3>To ensure that CryptPad is actively developed, consider supporting the project via the OpenCollective page, where you can see our <b>Roadmap</b> and <b>Funding goals</b>."
     Messages.crowdfunding_popup_text2 = "Alternatively, you can subscribe on this instance." // XXX
 
+    Messages.diagram_modesOptionLabel = "Change theme to {0}, will refresh app"; // XXX
+    Messages.diagram_sketchTheme = "sketch";
+    Messages.diagram_simpleTheme = "simple";
+    Messages.diagram_classicTheme = "classic";
+
     return Messages;
 
 });
