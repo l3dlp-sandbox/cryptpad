@@ -1877,5 +1877,9 @@
     "contacts_muted": "Masqué",
     "contacts_noFriends": "Votre liste de contacts est vide",
     "contacts_noFriendsInfo": "Commencez par <a>ajouter un contact</a> pour débuter une conversation.",
-    "contacts_historyCleared": "L'historique de conversation a été supprimé pour tout le monde"
+    "contacts_historyCleared": "L'historique de conversation a été supprimé pour tout le monde",
+    "diagram_modesOptionLabel": "Changer le thème pour {0}, réactualise l'application",
+    "diagram_sketchTheme": "Croquis",
+    "diagram_simpleTheme": "Simple",
+    "diagram_classicTheme": "Classique"
 }
