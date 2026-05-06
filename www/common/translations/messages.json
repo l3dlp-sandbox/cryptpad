@@ -1877,5 +1877,9 @@
     "contacts_muted": "Muted",
     "contacts_noFriends": "Your contact list is empty",
     "contacts_noFriendsInfo": "Start by <a>adding a contact</a> to begin a conversation.",
-    "contacts_historyCleared": "The chat history has been deleted for everyone"
+    "contacts_historyCleared": "The chat history has been deleted for everyone",
+    "diagram_modesOptionLabel": "Change theme to {0}, will refresh app",
+    "diagram_sketchTheme": "Sketch",
+    "diagram_simpleTheme": "Simple",
+    "diagram_classicTheme": "Classic"
 }
