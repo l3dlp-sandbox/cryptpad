@@ -170,6 +170,8 @@ define(req, function(AppConfig, Default, Language) {
     // "form_input_ph_url": "https://example.com",
 
     Messages.form_date_time = "Select date and time";
+    Messages.sent_chatMessage = "{0} has sent you a message"; // XXX
+
     return Messages;
 
 });

@@ -8,12 +8,14 @@ define([
     '/common/common-util.js',
     '/common/common-interface.js',
     '/common/common-ui-elements.js',
+    '/common/visible.js',
+    '/common/notify.js',
     '/common/inner/badges.js',
     '/common/hyperscript.js',
     '/common/diffMarked.js',
     '/common/common-icons.js',
     '/customize/pages.js',
-], function ($, Messages, Util, UI, UIElements, Badges, h, DiffMd, Icons, Pages) {
+], function ($, Messages, Util, UI, UIElements, Visible, Notification, Badges, h, DiffMd, Icons, Pages) {
     'use strict';
 
     var debug = console.log;
@@ -259,6 +261,7 @@ define([
             normalizeLabels($messagebox);
             scrollChatToBottom();
         };
+        var userInfo;
         markup.chatbox = function (id, data, curvePublic) {
             var moreHistory = h('span', {
                 class: 'cp-app-contacts-more-history',
@@ -444,6 +447,28 @@ define([
                         // failed to send
                         return void console.error('failed to send', e);
                     }
+
+                    //Send mailbox message if:
+                    //- recipient is a contact
+                    //- recipient is offline
+                    //- no previous messages to recipient sent while current tab is open
+                    var messageSent = {};
+                    execCommand('GET_STATUS', id, function (e, online) {
+                        if (online) {
+                            delete messageSent[id];
+                        } else {
+                            if (friend && !messageSent[id]) {
+                                common.mailbox.sendTo("SEND_CHAT_MESSAGE", {
+                                    name: userInfo.displayName,
+                                }, {
+                                    channel: contactsData[chan.curvePublic].notifications,
+                                    curvePublic: chan.curvePublic
+                                });
+                                messageSent[id] = true;
+                            }
+                        }
+                    });
+
                     input.value = '';
                     sending = false;
                     debug('sent successfully');
@@ -803,6 +828,11 @@ define([
                 });
             }
             notifyToolbar();
+
+            if (!Visible.currently()) {
+                common.notify();
+                Notification.create();
+            }
 
             channel.messages.push(message);
 
@@ -1217,10 +1247,10 @@ define([
             });
         };
         //});
-
         execCommand('GET_MY_INFO', null, function (e, info) {
             if (e) { return; }
             contactsData[info.curvePublic] = info;
+            userInfo = info;
         });
 
 
