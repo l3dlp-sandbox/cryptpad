@@ -685,6 +685,7 @@ define([
                 }
             };
 
+            let $dropdown, muteOption, unmuteOption;
             var rebuildDropdown = function () {
                 if (!$dropdown || !$dropdown.setOptions) { return; }
                 var opts = [];
@@ -700,7 +701,7 @@ define([
                 $dropdown.find('.cp-dropdown-content').hide();
             };
 
-            var muteOption = {
+            muteOption = {
                 tag: 'a',
                 content: [Icons.get('mute'), h('span', Messages.contacts_mute)],
                 action: function () {
@@ -713,7 +714,7 @@ define([
                     return true;
                 }
             };
-            var unmuteOption = {
+            unmuteOption = {
                 tag: 'a',
                 content: [Icons.get('notification'), h('span', Messages.contacts_unmute || 'Unmute')],
                 action: function () {
@@ -734,7 +735,7 @@ define([
                 dropdownOptions.push(removeOption);
             }
 
-            var $dropdown = UIElements.createDropdown({
+            $dropdown = UIElements.createDropdown({
                 iconCls: 'settings',
                 options: dropdownOptions,
                 buttonCls: 'cp-app-contacts-dropdown-btn',
