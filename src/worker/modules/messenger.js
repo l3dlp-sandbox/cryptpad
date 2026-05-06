@@ -15,6 +15,7 @@ const factory = (Crypto, Hash, Util, Realtime, Messaging,
 
     var Types = {
         message: 'MSG',
+        cleared: 'CLEARED',
         unfriend: 'UNFRIEND',
         mapId: 'MAP_ID',
         mapIdAck: 'MAP_ID_ACK'
@@ -270,6 +271,11 @@ const factory = (Crypto, Hash, Util, Realtime, Messaging,
             return true;
         }
         var proxy = ctx.store.proxy;
+        if (parsedMsg[0] === Types.cleared) {
+            channel.messages = [];
+            ctx.emit('CLEAR_CHANNEL', channel.id, channel.clients);
+            return;
+        }
         if (parsedMsg[0] === Types.unfriend) {
             curvePublic = parsedMsg[1];
 
@@ -916,11 +922,21 @@ const factory = (Crypto, Hash, Util, Realtime, Messaging,
         var channel = ctx.channels[id];
         if (!channel) { return void cb({error: 'NO_CHANNEL'}); }
         if (!ctx.store.rpc) { return void cb({error: 'RPC_NOT_READY'}); }
+        var proxy = ctx.store.proxy || {};
         ctx.store.rpc.clearOwnedChannel(id, function (err) {
             cb({error:err});
             if (!err) {
                 channel.messages = [];
                 ctx.emit('CLEAR_CHANNEL', id, channel.clients);
+                var msg = [Types.cleared, proxy.curvePublic, +new Date()];
+                var msgStr = JSON.stringify(msg);
+                var cryptMsg = channel.encrypt(msgStr);
+
+                channel.wc.bcast(cryptMsg).then(function () {
+                    // Success (message sent)
+                }, function (err) {
+                    console.error('Failed to send message:', err);
+                });
             }
         });
     };

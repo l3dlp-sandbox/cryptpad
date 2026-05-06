@@ -157,7 +157,12 @@ define(req, function(AppConfig, Default, Language) {
         }
     };
 
-    return Messages;
+    Messages.contacts_muted = "Muted"; // XXX new key
+    Messages.contacts_noFriends = "Your contact list is empty";
+    Messages.contacts_noFriendsInfo = "Start by adding someone to begin a conversation.";
+    Messages.contacts_historyCleared = "The chat history has been deleted for both parties"; // XXX
+    Messages.contacts_confirmRemoveHistory = "Are you sure you want to delete chat history? Messages will be removed for everyone and cannot be restored."
+    return Messages; // XXX existing key
 
 });
 }());
