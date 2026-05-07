@@ -3432,7 +3432,7 @@ define([
                     }
                 });
             }
-            if (Config.accounts_api && priv.accountName) {
+            if (Config.accounts_api && common.isLoggedIn()) {
                 content += ' ' + Messages.crowdfunding_popup_text2;
                 buttons.push({
                     name: Messages.features_f_subscribe,
