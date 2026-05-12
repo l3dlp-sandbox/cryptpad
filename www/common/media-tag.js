@@ -120,7 +120,7 @@ var factory = function (Util) {
                 var iframe = document.createElement('iframe');
                 if (cfg.pdf.viewer) { // PDFJS
                     var viewerUrl = cfg.pdf.viewer + '?file=' + url;
-                    iframe.setAttribute('sandbox', 'allow-scripts allow-downloads allow-same-origin');
+                    iframe.setAttribute('sandbox', 'allow-scripts allow-downloads allow-same-origin allow-modals');
                     iframe.src = viewerUrl + '#' + window.encodeURIComponent(metadata.name);
                     iframe.onload = function () {
                         if (!metadata.name) { return; }
