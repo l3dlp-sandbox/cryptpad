@@ -1877,5 +1877,9 @@
     "contacts_muted": "Stlmené",
     "contacts_noFriends": "Váš zoznam kontaktov je prázdny",
     "contacts_noFriendsInfo": "Najskôr <a>pridajte kontakt</a>, aby ste mohli začať konverzáciu.",
-    "contacts_historyCleared": "História chatu bola vymazaná pre všetkých"
+    "contacts_historyCleared": "História chatu bola vymazaná pre všetkých",
+    "diagram_modesOptionLabel": "Zmeniť tému na {0}, obnoví aplikáciu",
+    "diagram_sketchTheme": "Náčrt",
+    "diagram_simpleTheme": "Jednoduchá",
+    "diagram_classicTheme": "Klasická"
 }

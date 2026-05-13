@@ -1877,5 +1877,9 @@
     "contacts_muted": "已静音",
     "contacts_noFriends": "您的联系人列表为空",
     "contacts_noFriendsInfo": "请先<a>添加联系人</a>以开始对话。",
-    "contacts_historyCleared": "所有人的聊天记录已被删除"
+    "contacts_historyCleared": "所有人的聊天记录已被删除",
+    "diagram_modesOptionLabel": "将主题更改为 {0}，应用将刷新",
+    "diagram_sketchTheme": "草图",
+    "diagram_simpleTheme": "简洁",
+    "diagram_classicTheme": "经典"
 }

@@ -1877,5 +1877,9 @@
     "form_input_ph_number": "Gib eine Zahl ein",
     "form_date_time": "Wähle Datum und Uhrzeit aus",
     "contacts_muted": "Stummgeschaltet",
-    "contacts_noFriendsInfo": "<a>Füge einen Kontakt hinzu</a>, um eine Unterhaltung zu beginnen."
+    "contacts_noFriendsInfo": "<a>Füge einen Kontakt hinzu</a>, um eine Unterhaltung zu beginnen.",
+    "diagram_modesOptionLabel": "Zum Theme {0} wechseln, lädt die Anwendung neu",
+    "diagram_sketchTheme": "Skizze",
+    "diagram_simpleTheme": "Einfach",
+    "diagram_classicTheme": "Klassisch"
 }
